@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { CodeSnippet, getRandomSnippet } from "./snippets";
-import { HistoryManager, TestResult } from "./history";
+import { HistoryManager, TestResult } from "./historyPanel";
 
 // ANSI escape helpers
 const ESC = "\x1b";
@@ -34,7 +34,7 @@ export class TypingTestRunner {
   private startTime: number = 0;
   private finished = false;
 
-  constructor(private historyManager: HistoryManager) {}
+  constructor(private historyManager: HistoryManager, private onComplete?: () => void) {}
 
   async start(difficulty?: CodeSnippet["difficulty"]): Promise<void> {
     this.snippet = getRandomSnippet(difficulty);
@@ -282,6 +282,7 @@ export class TypingTestRunner {
       snippetLength: totalChars,
     };
     await this.historyManager.addResult(result);
+    this.onComplete?.();
 
     // Results screen
     this.write(clearScreen());

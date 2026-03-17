@@ -54,6 +54,13 @@
         "command": "typespeed.clearHistory",
         "title": "TypeSpeed: Clear History"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "typespeed.start",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t"
+      }
     ]
   },
   "scripts": {

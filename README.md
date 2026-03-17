@@ -6,10 +6,12 @@ A typing speed test extension that runs directly in VS Code's integrated termina
 
 ## Features
 
-- **Code-focused typing tests** — Practice with real code snippets in JavaScript, TypeScript, Python, Rust, and Java
+- **Code-focused typing tests** — Practice with 100+ real code snippets in JavaScript, TypeScript, Python, Rust, Go, Java, C, Ruby, Swift, and Kotlin
 - **Three difficulty levels** — Easy (simple statements), Medium (functions & classes), Hard (generics & advanced patterns)
 - **Live stats** — See your WPM, accuracy, errors, and time in real-time as you type
 - **Color-coded feedback** — Green for correct characters, red highlight for mistakes
+- **Status bar integration** — See your last and best WPM right in the status bar
+- **Quick launch** — Start a test instantly with `Ctrl+Shift+T` (`Cmd+Shift+T` on Mac)
 - **Persistent history** — Track all your past attempts with averages and personal bests
 - **History dashboard** — A dedicated webview panel showing your stats and progress
 
@@ -19,7 +21,7 @@ A typing speed test extension that runs directly in VS Code's integrated termina
 
 ```bash
 # Clone the repo
-git clone <your-repo-url> typespeed-vscode
+git clone https://github.com/Owaiinnn/TypeSpeed.git typespeed-vscode
 cd typespeed-vscode
 
 # Install dependencies
@@ -47,11 +49,11 @@ Then install the `.vsix` file via **Extensions → ··· → Install from VSIX*
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `TypeSpeed: Start Typing Test` | Launch a new typing test in the terminal |
-| `TypeSpeed: View History` | Open the history dashboard |
-| `TypeSpeed: Clear History` | Delete all saved results |
+| Command | Keybinding | Description |
+| ------- | ---------- | ----------- |
+| `TypeSpeed: Start Typing Test` | `Ctrl+Shift+T` | Launch a new typing test in the terminal |
+| `TypeSpeed: View History` | | Open the history dashboard |
+| `TypeSpeed: Clear History` | | Delete all saved results |
 
 ## How It Works
 
