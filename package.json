@@ -1,0 +1,51 @@
+{
+  "name": "typespeed",
+  "displayName": "TypeSpeed - Terminal Typing Test",
+  "description": "A typing speed test that runs in VS Code's integrated terminal. Practice with code snippets and track your WPM, accuracy, and progress over time.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "typing",
+    "wpm",
+    "speed",
+    "test",
+    "practice",
+    "code"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "icon": "icon.png",
+  "contributes": {
+    "commands": [
+      {
+        "command": "typespeed.start",
+        "title": "TypeSpeed: Start Typing Test"
+      },
+      {
+        "command": "typespeed.history",
+        "title": "TypeSpeed: View History"
+      },
+      {
+        "command": "typespeed.clearHistory",
+        "title": "TypeSpeed: Clear History"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.1.6"
+  }
+}
