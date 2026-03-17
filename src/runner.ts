@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { CodeSnippet, getRandomSnippet, fetchSnippetFromAPI } from "./snippets";
+import { CodeSnippet, getRandomSnippet } from "./snippets";
 import { HistoryManager, TestResult } from "./history";
 
 // ANSI escape helpers
@@ -37,14 +37,7 @@ export class TypingTestRunner {
   constructor(private historyManager: HistoryManager) {}
 
   async start(difficulty?: CodeSnippet["difficulty"]): Promise<void> {
-    // Try API first, fall back to built-in
-    let snippet: CodeSnippet | null = null;
-    try {
-      snippet = await fetchSnippetFromAPI(difficulty);
-    } catch {
-      // API failed, will use built-in
-    }
-    this.snippet = snippet || getRandomSnippet(difficulty);
+    this.snippet = getRandomSnippet(difficulty);
     this.typed = "";
     this.startTime = 0;
     this.finished = false;
@@ -95,8 +88,7 @@ export class TypingTestRunner {
     this.write(HIDE_CURSOR);
 
     // ─── Header ───
-    const sourceTag = this.snippet.source === "api" ? " [API]" : " [Built-in]";
-    const titleContent = `  ⌨  TypeSpeed — ${this.snippet.language} (${this.snippet.difficulty})${sourceTag}`;
+    const titleContent = `  ⌨  TypeSpeed — ${this.snippet.language} (${this.snippet.difficulty})`;
     const titlePad = Math.max(0, width - titleContent.length - 2);
     this.write(`${BOLD}${CYAN}╔${"═".repeat(width - 2)}╗${RESET}\r\n`);
     this.write(
@@ -365,17 +357,11 @@ export class TypingTestRunner {
     this.write(`${BOLD}${CYAN}╚${"═".repeat(width - 2)}╝${RESET}\r\n`);
   }
 
-  private async restart(): Promise<void> {
+  private restart(): void {
     this.finished = false;
     this.typed = "";
     this.startTime = 0;
-    let snippet: CodeSnippet | null = null;
-    try {
-      snippet = await fetchSnippetFromAPI(this.snippet?.difficulty);
-    } catch {
-      // fall back
-    }
-    this.snippet = snippet || getRandomSnippet(this.snippet?.difficulty);
+    this.snippet = getRandomSnippet(this.snippet?.difficulty);
     this.render();
   }
 

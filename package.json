@@ -3,12 +3,25 @@
   "displayName": "TypeSpeed - Terminal Typing Test",
   "description": "A typing speed test that runs in VS Code's integrated terminal. Practice with code snippets and track your WPM, accuracy, and progress over time.",
   "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "Owaiinnn",
+  "author": {
+    "name": "Owain"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Owaiinnn/TypeSpeed.git"
+  },
+  "homepage": "https://github.com/Owaiinnn/TypeSpeed#readme",
+  "bugs": {
+    "url": "https://github.com/Owaiinnn/TypeSpeed/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Education"
   ],
   "keywords": [
     "typing",
@@ -16,11 +29,17 @@
     "speed",
     "test",
     "practice",
-    "code"
+    "code",
+    "typing-test",
+    "keyboard"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "icon": "icon.png",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "contributes": {
     "commands": [
       {

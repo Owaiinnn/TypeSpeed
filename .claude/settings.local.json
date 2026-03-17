@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx --yes sharp-cli -- -i images/icon.svg -o images/icon.png -w 256 -h 256)",
+      "Bash(npx --yes svg2png-cli images/icon.svg images/icon.png)",
+      "Bash(npx sharp-cli:*)",
+      "Bash(npx --yes @vscode/vsce package)",
+      "Bash(rm typespeed-0.1.0.vsix)",
+      "Bash(npx @vscode/vsce package)"
     ]
   }
 }
