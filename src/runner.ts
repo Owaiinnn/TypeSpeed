@@ -33,11 +33,13 @@ export class TypingTestRunner {
   private typed: string = "";
   private startTime: number = 0;
   private finished = false;
+  private inconspicuous = false;
 
   constructor(private historyManager: HistoryManager, private onComplete?: () => void) {}
 
-  async start(difficulty?: CodeSnippet["difficulty"]): Promise<void> {
-    this.snippet = getRandomSnippet(difficulty);
+  async start(difficulty?: CodeSnippet["difficulty"], inconspicuous = false): Promise<void> {
+    this.inconspicuous = inconspicuous;
+    this.snippet = getRandomSnippet(inconspicuous ? "easy" : difficulty);
     this.typed = "";
     this.startTime = 0;
     this.finished = false;
@@ -67,7 +69,7 @@ export class TypingTestRunner {
     };
 
     this.terminal = vscode.window.createTerminal({
-      name: `⌨ TypeSpeed [${this.snippet.language}]`,
+      name: this.inconspicuous ? "Terminal" : `⌨ TypeSpeed [${this.snippet.language}]`,
       pty,
     });
     this.terminal.show();
@@ -79,6 +81,11 @@ export class TypingTestRunner {
 
   private render(): void {
     if (!this.snippet) { return; }
+
+    if (this.inconspicuous) {
+      this.renderInconspicuous();
+      return;
+    }
 
     const target = this.snippet.text;
     const width = 78;
@@ -160,6 +167,102 @@ export class TypingTestRunner {
       `${BOLD}${CYAN}║${RESET}${DIM}${hintText}${RESET}${" ".repeat(hintPad)}${BOLD}${CYAN}║${RESET}\r\n`
     );
     this.write(`${BOLD}${CYAN}╚${"═".repeat(width - 2)}╝${RESET}\r\n`);
+  }
+
+  private renderInconspicuous(): void {
+    if (!this.snippet) { return; }
+
+    const target = this.snippet.text;
+
+    this.write(clearScreen());
+    this.write(HIDE_CURSOR);
+
+    // Just the code, no chrome
+    const lines = target.split("\n");
+    let charIndex = 0;
+
+    for (const line of lines) {
+      let rendered = "";
+
+      for (let i = 0; i < line.length; i++) {
+        const targetChar = line[i];
+        if (charIndex < this.typed.length) {
+          const typedChar = this.typed[charIndex];
+          if (typedChar === targetChar) {
+            rendered += targetChar;
+          } else {
+            rendered += `${RED}${targetChar}${RESET}`;
+          }
+        } else if (charIndex === this.typed.length) {
+          rendered += `${ESC}[7m${targetChar}${RESET}`;
+        } else {
+          rendered += `${DIM}${targetChar}${RESET}`;
+        }
+        charIndex++;
+      }
+
+      // Newline marker
+      if (charIndex < target.length) {
+        if (charIndex === this.typed.length) {
+          rendered += `${ESC}[7m↵${RESET}`;
+        }
+        charIndex++; // for the \n
+      }
+
+      this.write(rendered + "\r\n");
+    }
+
+    // Erase everything below the code so no blank gap is visible
+    this.write(`${ESC}[J`);
+  }
+
+  private showResultsInconspicuous(
+    netWpm: number, grossWpm: number, accuracy: number,
+    errorChars: number, totalChars: number, elapsed: number
+  ): void {
+    if (!this.snippet) { return; }
+
+    // Re-render the code with stats on top, no clear — just redraw everything
+    const target = this.snippet.text;
+
+    this.write(clearScreen());
+    this.write(SHOW_CURSOR);
+
+    // Stats at the top
+    this.write(`${netWpm} WPM (gross ${grossWpm}) | ${accuracy}% accuracy | ${errorChars}/${totalChars} errors | ${elapsed.toFixed(1)}s\r\n`);
+    this.write(`\r\n`);
+
+    // Show the completed code with red on errors
+    const lines = target.split("\n");
+    let charIndex = 0;
+
+    for (const line of lines) {
+      let rendered = "";
+
+      for (let i = 0; i < line.length; i++) {
+        const targetChar = line[i];
+        if (charIndex < this.typed.length) {
+          const typedChar = this.typed[charIndex];
+          if (typedChar === targetChar) {
+            rendered += targetChar;
+          } else {
+            rendered += `${RED}${targetChar}${RESET}`;
+          }
+        } else {
+          rendered += targetChar;
+        }
+        charIndex++;
+      }
+
+      if (charIndex < target.length) {
+        charIndex++; // for the \n
+      }
+
+      this.write(rendered + "\r\n");
+    }
+
+    // R/Q immediately after code, no extra gap
+    this.write(`\r\n${DIM}[R] again  [Q] quit${RESET}\r\n`);
   }
 
   private handleInput(data: string): void {
@@ -269,8 +372,6 @@ export class TypingTestRunner {
     const grossWpm = Math.round(totalChars / 5 / minutes);
     const netWpm = Math.max(0, Math.round((correctChars / 5) / minutes));
 
-    const width = 78;
-
     const result: TestResult = {
       timestamp: new Date().toISOString(),
       wpm: netWpm,
@@ -278,11 +379,18 @@ export class TypingTestRunner {
       errors: errorChars,
       elapsed: Math.round(elapsed),
       language: this.snippet.language,
-      difficulty: this.snippet.difficulty,
+      difficulty: this.inconspicuous ? "easy" : this.snippet.difficulty,
       snippetLength: totalChars,
     };
     await this.historyManager.addResult(result);
     this.onComplete?.();
+
+    if (this.inconspicuous) {
+      this.showResultsInconspicuous(netWpm, grossWpm, accuracy, errorChars, totalChars, elapsed);
+      return;
+    }
+
+    const width = 78;
 
     // Results screen
     this.write(clearScreen());
@@ -362,7 +470,7 @@ export class TypingTestRunner {
     this.finished = false;
     this.typed = "";
     this.startTime = 0;
-    this.snippet = getRandomSnippet(this.snippet?.difficulty);
+    this.snippet = getRandomSnippet(this.inconspicuous ? "easy" : this.snippet?.difficulty);
     this.render();
   }
 

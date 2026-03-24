@@ -31,10 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
   const startCmd = vscode.commands.registerCommand("typespeed.start", async () => {
     const difficulty = await vscode.window.showQuickPick(
       [
-        { label: "$(zap) Easy", description: "Short, simple snippets", value: "easy" as const },
-        { label: "$(flame) Medium", description: "Functions and classes", value: "medium" as const },
-        { label: "$(warning) Hard", description: "Advanced patterns & generics", value: "hard" as const },
-        { label: "$(question) Random", description: "Any difficulty", value: undefined },
+        { label: "$(zap) Easy", description: "Short, simple snippets", value: "easy" as const, inconspicuous: false },
+        { label: "$(flame) Medium", description: "Functions and classes", value: "medium" as const, inconspicuous: false },
+        { label: "$(warning) Hard", description: "Advanced patterns & generics", value: "hard" as const, inconspicuous: false },
+        { label: "$(question) Random", description: "Any difficulty", value: undefined, inconspicuous: false },
+        { label: "$(eye-closed) Inconspicuous", description: "Stealth mode — plain terminal look", value: "easy" as const, inconspicuous: true },
       ],
       {
         placeHolder: "Select difficulty level",
@@ -47,7 +48,10 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const runner = new TypingTestRunner(historyManager, () => updateStatusBar(historyManager));
-    await runner.start(difficulty.value as CodeSnippet["difficulty"] | undefined);
+    await runner.start(
+      difficulty.inconspicuous ? "easy" : difficulty.value as CodeSnippet["difficulty"] | undefined,
+      difficulty.inconspicuous
+    );
   });
 
   // ─── View History ───
